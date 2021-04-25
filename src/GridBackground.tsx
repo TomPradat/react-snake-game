@@ -1,48 +1,44 @@
 import React, { useEffect, useRef } from "react";
-import { SIDE_SIZE } from "./Game";
+import { GAME_CONSTANTS } from "./constants";
+
+const {
+  size,
+  numberOfRows,
+  primaryColor,
+  secondaryColor,
+} = GAME_CONSTANTS.board;
 
 const GridBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const drawBackground = (context: CanvasRenderingContext2D) => {
+    const numberOfTiles = Math.pow(numberOfRows, 2);
+    const tileSize = size / numberOfRows;
+
+    for (let i = 0; i < numberOfTiles; i++) {
+      const columnNumber = i % numberOfRows;
+      const rowNumber = (i - columnNumber) / numberOfRows;
+
+      context.fillStyle =
+        (rowNumber + columnNumber) % 2 === 0 ? primaryColor : secondaryColor;
+      context.fillRect(
+        columnNumber * tileSize,
+        rowNumber * tileSize,
+        tileSize,
+        tileSize
+      );
+    }
+  };
 
   useEffect(() => {
     const context = canvasRef.current?.getContext("2d");
 
     if (context) {
-      context.fillStyle = "#357a38";
-
-      new Array(50).fill("").forEach((v, idx) => {
-        const columnNumber = (idx * 2) % 10;
-        const rowNumber = (idx * 2 - columnNumber) / 10;
-        context.fillRect(
-          (columnNumber + (rowNumber % 2 === 0 ? 0 : 1)) * (SIDE_SIZE / 10),
-          rowNumber * (SIDE_SIZE / 10),
-          SIDE_SIZE / 10,
-          SIDE_SIZE / 10
-        );
-      });
-
-      context.fillStyle = "#4caf50";
-
-      new Array(50).fill("").forEach((v, idx) => {
-        const columnNumber = (idx * 2) % 10;
-        const rowNumber = (idx * 2 - columnNumber) / 10;
-        context.fillRect(
-          (columnNumber + (rowNumber % 2 === 0 ? 1 : 0)) * (SIDE_SIZE / 10),
-          rowNumber * (SIDE_SIZE / 10),
-          SIDE_SIZE / 10,
-          SIDE_SIZE / 10
-        );
-      });
+      drawBackground(context);
     }
   }, []);
 
-  return (
-    <canvas
-      width={`${SIDE_SIZE}px`}
-      height={`${SIDE_SIZE}px`}
-      ref={canvasRef}
-    />
-  );
+  return <canvas width={`${size}px`} height={`${size}px`} ref={canvasRef} />;
 };
 
 export default GridBackground;

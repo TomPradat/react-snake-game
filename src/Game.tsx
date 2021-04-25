@@ -1,55 +1,61 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import Apple from "./Apple";
+import { GAME_CONSTANTS } from "./constants";
+import tick, { GameState } from "./core";
 import "./Game.css";
 import GridBackground from "./GridBackground";
+import Snake from "./Snake";
 
-export const SIDE_SIZE = 500;
+const { size, numberOfRows } = GAME_CONSTANTS.board;
+const tileSize = size / numberOfRows;
 
-const DIRECTIONS = {
-  RIGHT: "RIGHT",
-  TOP: "TOP",
-  LEFT: "LEFT",
-  BOTTOM: "BOTTOM",
+enum Directions {
+  Right,
+  Top,
+  Left,
+  Bottom,
+}
+
+const initialState = {
+  snake: [{ x: 0, y: 0 }],
+  apple: { x: 5, y: 5 },
+  direction: Directions.Right,
+  isGameOver: false,
 };
 
 const Game = () => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const direction = useRef(DIRECTIONS.RIGHT);
-
-  const tick = useCallback(() => {
-    switch (direction.current) {
-      case DIRECTIONS.RIGHT: {
-        setPosition((previous) => ({ x: previous.x + 1, y: previous.y }));
-        break;
-      }
-      case DIRECTIONS.LEFT: {
-        setPosition((previous) => ({ x: previous.x - 1, y: previous.y }));
-        break;
-      }
-      case DIRECTIONS.TOP: {
-        setPosition((previous) => ({ x: previous.x, y: previous.y - 1 }));
-        break;
-      }
-      case DIRECTIONS.BOTTOM: {
-        setPosition((previous) => ({ x: previous.x, y: previous.y + 1 }));
-        break;
-      }
-    }
-  }, []);
+  const [isPaused, setIsPaused] = useState(true);
+  const [state, setState] = useState<GameState>(initialState);
 
   useEffect(() => {
     const changeDirectionHandler = (event: KeyboardEvent) => {
       switch (event.key) {
-        case "ArrowRight":
-          direction.current = DIRECTIONS.RIGHT;
+        case "ArrowRight": {
+          if (state.direction !== Directions.Left) {
+            setState((current) => ({
+              ...current,
+              direction: Directions.Right,
+            }));
+          }
           break;
+        }
         case "ArrowLeft":
-          direction.current = DIRECTIONS.LEFT;
+          if (state.direction !== Directions.Right) {
+            setState((current) => ({ ...current, direction: Directions.Left }));
+          }
           break;
         case "ArrowDown":
-          direction.current = DIRECTIONS.BOTTOM;
+          if (state.direction !== Directions.Top) {
+            setState((current) => ({
+              ...current,
+              direction: Directions.Bottom,
+            }));
+          }
           break;
         case "ArrowUp":
-          direction.current = DIRECTIONS.TOP;
+          if (state.direction !== Directions.Bottom) {
+            setState((current) => ({ ...current, direction: Directions.Top }));
+          }
           break;
         default:
       }
@@ -60,31 +66,61 @@ const Game = () => {
     return () => {
       document.body.removeEventListener("keydown", changeDirectionHandler);
     };
-  }, []);
+  }, [state.direction]);
 
   useEffect(() => {
-    const intervalId = setInterval(tick, 500);
+    let intervalId: number;
+
+    if (!isPaused && !state.isGameOver) {
+      intervalId = setInterval(() => {
+        setState((current) => tick(current, numberOfRows));
+      }, 400);
+    }
 
     return () => {
-      clearInterval(intervalId);
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
     };
-  }, [tick]);
+  }, [isPaused, state.isGameOver]);
 
   return (
-    <div className="Game">
-      <GridBackground />
-      <div
-        style={{
-          width: `${SIDE_SIZE / 10 - 10}px`,
-          height: `${SIDE_SIZE / 10 - 10}px`,
-          backgroundColor: "black",
-          borderRadius: "50%",
-          position: "absolute",
-          left: (position.x * SIDE_SIZE) / 10 + 5,
-          top: (position.y * SIDE_SIZE) / 10 + 5,
-          transition: "all 500ms ease",
-        }}
-      />
+    <div>
+      <div className="Game">
+        <GridBackground />
+        <Snake tileSize={tileSize} parts={state.snake} />
+        {state.apple && <Apple tileSize={tileSize} position={state.apple} />}
+        {state.isGameOver && (
+          <div
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              left: "0px",
+              display: "flex",
+              top: "0px",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "3rem",
+              fontWeight: "bold",
+            }}
+          >
+            GAME OVER
+          </div>
+        )}
+      </div>
+      {state.isGameOver ? (
+        <button
+          onClick={() => {
+            setState(initialState);
+          }}
+        >
+          Restart
+        </button>
+      ) : null}
+      <button onClick={() => setIsPaused(!isPaused)}>
+        {isPaused ? "Play" : "Pause"}
+      </button>
     </div>
   );
 };
