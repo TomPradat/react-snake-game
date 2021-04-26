@@ -8,13 +8,13 @@ type Props = {
 const Apple = ({ tileSize, position }: Props) => (
   <div
     style={{
-      width: `${tileSize - 10}px`,
-      height: `${tileSize - 10}px`,
+      width: `${tileSize - 20}px`,
+      height: `${tileSize - 20}px`,
       backgroundColor: "red",
       borderRadius: "50%",
       position: "absolute",
-      left: position.x * tileSize + 5,
-      top: position.y * tileSize + 5,
+      left: position.x * tileSize + 10,
+      top: position.y * tileSize + 10,
     }}
   />
 );

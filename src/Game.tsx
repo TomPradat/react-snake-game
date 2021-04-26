@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Apple from "./Apple";
 import { GAME_CONSTANTS } from "./constants";
-import tick, { GameState } from "./core";
+import tick, { computeNextDirection, GameState } from "./core";
 import "./Game.css";
 import GridBackground from "./GridBackground";
 import Snake from "./Snake";
@@ -10,15 +10,19 @@ const { size, numberOfRows } = GAME_CONSTANTS.board;
 const tileSize = size / numberOfRows;
 
 enum Directions {
-  Right,
-  Top,
-  Left,
-  Bottom,
+  Right = "Right",
+  Top = "Top",
+  Left = "Left",
+  Bottom = "Bottom",
 }
 
 const initialState = {
-  snake: [{ x: 0, y: 0 }],
-  apple: { x: 5, y: 5 },
+  snake: [
+    { x: 0, y: 5 },
+    { x: 1, y: 5 },
+    { x: 2, y: 5 },
+  ],
+  apple: { x: 5, y: 6 },
   direction: Directions.Right,
   isGameOver: false,
 };
@@ -29,36 +33,12 @@ const Game = () => {
 
   useEffect(() => {
     const changeDirectionHandler = (event: KeyboardEvent) => {
-      switch (event.key) {
-        case "ArrowRight": {
-          if (state.direction !== Directions.Left) {
-            setState((current) => ({
-              ...current,
-              direction: Directions.Right,
-            }));
-          }
-          break;
-        }
-        case "ArrowLeft":
-          if (state.direction !== Directions.Right) {
-            setState((current) => ({ ...current, direction: Directions.Left }));
-          }
-          break;
-        case "ArrowDown":
-          if (state.direction !== Directions.Top) {
-            setState((current) => ({
-              ...current,
-              direction: Directions.Bottom,
-            }));
-          }
-          break;
-        case "ArrowUp":
-          if (state.direction !== Directions.Bottom) {
-            setState((current) => ({ ...current, direction: Directions.Top }));
-          }
-          break;
-        default:
-      }
+      setState((current) => {
+        return {
+          ...current,
+          direction: computeNextDirection(current, event),
+        };
+      });
     };
 
     document.body.addEventListener("keydown", changeDirectionHandler);
@@ -66,7 +46,7 @@ const Game = () => {
     return () => {
       document.body.removeEventListener("keydown", changeDirectionHandler);
     };
-  }, [state.direction]);
+  }, []);
 
   useEffect(() => {
     let intervalId: number;

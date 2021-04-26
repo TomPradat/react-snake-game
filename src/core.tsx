@@ -3,10 +3,10 @@ type Position = { x: number; y: number };
 type Snake = Array<Position>;
 
 enum Directions {
-  Right,
-  Top,
-  Left,
-  Bottom,
+  Right = "Right",
+  Top = "Top",
+  Left = "Left",
+  Bottom = "Bottom",
 }
 
 class GameOverError extends Error {}
@@ -82,10 +82,18 @@ const computeNextSnake = (
     apple.x !== nextSnakeHeadPosition.x ||
     apple.y !== nextSnakeHeadPosition.y
   ) {
-    nextSnake.shift();
   }
 
+  const tail = nextSnake.shift();
   nextSnake.push(nextSnakeHeadPosition);
+
+  if (
+    apple &&
+    apple.x === nextSnakeHeadPosition.x &&
+    apple.y === nextSnakeHeadPosition.y
+  ) {
+    nextSnake.unshift(tail as Position);
+  }
 
   return nextSnake;
 };
@@ -95,7 +103,6 @@ const generateNumber = (min: number, max: number): number => {
 };
 
 const generateApple = (snake: Snake, numberOfRows: number): Position => {
-  debugger;
   const numberOfTiles = Math.pow(numberOfRows, 2);
 
   const numbersToExclude = snake.map(({ x, y }) => y * numberOfRows + x);
@@ -113,6 +120,37 @@ const generateApple = (snake: Snake, numberOfRows: number): Position => {
     x: chosenNumber % numberOfRows,
     y: (chosenNumber - (chosenNumber % numberOfRows)) / numberOfRows,
   };
+};
+
+export const computeNextDirection = (
+  { snake, direction: currentDirection }: GameState,
+  event: KeyboardEvent
+): Directions => {
+  const head = snake[snake.length - 1];
+  const neck = snake[snake.length - 2];
+
+  let forbiddenDirection;
+
+  if (head.x === neck.x) {
+    forbiddenDirection =
+      head.y - neck.y > 0 ? Directions.Top : Directions.Bottom;
+  } else {
+    forbiddenDirection =
+      head.x - neck.x > 0 ? Directions.Left : Directions.Right;
+  }
+
+  const keyDirectionMapping: Record<string, Directions> = {
+    ArrowRight: Directions.Right,
+    ArrowLeft: Directions.Left,
+    ArrowDown: Directions.Bottom,
+    ArrowUp: Directions.Top,
+  };
+
+  const nextDirection = keyDirectionMapping[event.key] ?? currentDirection;
+
+  return nextDirection === forbiddenDirection
+    ? currentDirection
+    : nextDirection;
 };
 
 const tick = (state: GameState, numberOfRows: number): GameState => {

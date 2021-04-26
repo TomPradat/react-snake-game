@@ -8,21 +8,30 @@ type Props = {
 const Snake = ({ tileSize, parts }: Props) => {
   return (
     <>
-      {parts.map((part, index) => (
-        <div
-          key={index}
-          style={{
-            width: `${tileSize - 10}px`,
-            height: `${tileSize - 10}px`,
-            backgroundColor: "black",
-            borderRadius: "50%",
-            position: "absolute",
-            left: part.x * tileSize + 5,
-            top: part.y * tileSize + 5,
-            transition: "all 400ms ease",
-          }}
-        />
-      ))}
+      {parts.map((part, index) => {
+        let reduction = 10;
+        if (index === 0) {
+          reduction += 10;
+        } else if (index === 1) {
+          reduction += 5;
+        }
+
+        return (
+          <div
+            key={parts.length - index}
+            style={{
+              width: `${tileSize - reduction}px`,
+              height: `${tileSize - reduction}px`,
+              backgroundColor: "black",
+              borderRadius: "50%",
+              position: "absolute",
+              left: part.x * tileSize + reduction / 2,
+              top: part.y * tileSize + reduction / 2,
+              transition: "all 400ms linear",
+            }}
+          />
+        );
+      })}
     </>
   );
 };
