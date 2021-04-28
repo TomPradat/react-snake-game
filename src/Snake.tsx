@@ -19,12 +19,10 @@ const Snake = ({ tileSize, parts }: Props) => {
         return (
           <div
             key={parts.length - index}
+            className="bg-blue-900 rounded-full absolute"
             style={{
               width: `${tileSize - reduction}px`,
               height: `${tileSize - reduction}px`,
-              backgroundColor: "black",
-              borderRadius: "50%",
-              position: "absolute",
               left: part.x * tileSize + reduction / 2,
               top: part.y * tileSize + reduction / 2,
               transition: "all 400ms linear",

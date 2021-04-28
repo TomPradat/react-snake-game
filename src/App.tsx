@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import "./App.css";
 import Game from "./Game";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="App">
+    <div
+      style={{ backgroundColor: "#282c34" }}
+      className="min-h-screen flex flex-col items-center justify-center text-white text-center text-xl"
+    >
       <Game />
     </div>
   );

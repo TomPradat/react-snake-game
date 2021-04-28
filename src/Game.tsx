@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Apple from "./Apple";
 import { GAME_CONSTANTS } from "./constants";
 import tick, { computeNextDirection, GameState } from "./core";
-import "./Game.css";
 import GridBackground from "./GridBackground";
 import Snake from "./Snake";
 
@@ -66,41 +65,33 @@ const Game = () => {
 
   return (
     <div>
-      <div className="Game">
+      <div className="relative mb-4">
         <GridBackground />
         <Snake tileSize={tileSize} parts={state.snake} />
         {state.apple && <Apple tileSize={tileSize} position={state.apple} />}
         {state.isGameOver && (
-          <div
-            style={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
-              left: "0px",
-              display: "flex",
-              top: "0px",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "3rem",
-              fontWeight: "bold",
-            }}
-          >
+          <div className="absolute w-full h-full left-0 top-0 flex items-center justify-center font-bold text-5xl">
             GAME OVER
           </div>
         )}
       </div>
       {state.isGameOver ? (
         <button
+          className="bg-green-500 hover:bg-green-600 py-2 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50"
           onClick={() => {
             setState(initialState);
           }}
         >
           Restart
         </button>
-      ) : null}
-      <button onClick={() => setIsPaused(!isPaused)}>
-        {isPaused ? "Play" : "Pause"}
-      </button>
+      ) : (
+        <button
+          className="bg-green-500 hover:bg-green-600 py-2 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50"
+          onClick={() => setIsPaused(!isPaused)}
+        >
+          {isPaused ? "Play" : "Pause"}
+        </button>
+      )}
     </div>
   );
 };
