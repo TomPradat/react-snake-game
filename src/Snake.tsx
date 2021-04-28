@@ -1,4 +1,7 @@
 import React from "react";
+import { GAME_CONSTANTS } from "./constants";
+
+const { speed } = GAME_CONSTANTS.board;
 
 type Props = {
   tileSize: number;
@@ -25,7 +28,7 @@ const Snake = ({ tileSize, parts }: Props) => {
               height: `${tileSize - reduction}px`,
               left: part.x * tileSize + reduction / 2,
               top: part.y * tileSize + reduction / 2,
-              transition: "all 400ms linear",
+              transition: `all ${speed}ms linear`,
             }}
           />
         );

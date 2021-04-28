@@ -5,7 +5,7 @@ import tick, { computeNextDirection, GameState } from "./core";
 import GridBackground from "./GridBackground";
 import Snake from "./Snake";
 
-const { size, numberOfRows } = GAME_CONSTANTS.board;
+const { size, numberOfRows, speed } = GAME_CONSTANTS.board;
 const tileSize = size / numberOfRows;
 
 enum Directions {
@@ -53,7 +53,7 @@ const Game = () => {
     if (!isPaused && !state.isGameOver) {
       intervalId = setInterval(() => {
         setState((current) => tick(current, numberOfRows));
-      }, 400);
+      }, speed);
     }
 
     return () => {
