@@ -7,7 +7,7 @@ type Props = {
 
 const Apple = ({ tileSize, position }: Props) => (
   <div
-    className="bg-red-500 rounded-full absolute"
+    className="bg-yellow-400 rounded-full absolute"
     style={{
       width: `${tileSize - 20}px`,
       height: `${tileSize - 20}px`,

@@ -2,7 +2,7 @@ type Position = { x: number; y: number };
 
 type Snake = Array<Position>;
 
-enum Directions {
+export enum Directions {
   Right = "Right",
   Top = "Top",
   Left = "Left",
@@ -124,7 +124,7 @@ const generateApple = (snake: Snake, numberOfRows: number): Position => {
 
 export const computeNextDirection = (
   { snake, direction: currentDirection }: GameState,
-  event: KeyboardEvent
+  eventDirection: Directions
 ): Directions => {
   const head = snake[snake.length - 1];
   const neck = snake[snake.length - 2];
@@ -139,14 +139,7 @@ export const computeNextDirection = (
       head.x - neck.x > 0 ? Directions.Left : Directions.Right;
   }
 
-  const keyDirectionMapping: Record<string, Directions> = {
-    ArrowRight: Directions.Right,
-    ArrowLeft: Directions.Left,
-    ArrowDown: Directions.Bottom,
-    ArrowUp: Directions.Top,
-  };
-
-  const nextDirection = keyDirectionMapping[event.key] ?? currentDirection;
+  const nextDirection = eventDirection ?? currentDirection;
 
   return nextDirection === forbiddenDirection
     ? currentDirection

@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useSwipeable } from "react-swipeable";
 import Apple from "./Apple";
 import { GAME_CONSTANTS } from "./constants";
-import tick, { computeNextDirection, GameState } from "./core";
+import tick, { computeNextDirection, Directions, GameState } from "./core";
 import GridBackground from "./GridBackground";
-import Snake from "./Snake";
+import { getHighestScore, registerScore } from "./score";
+import Snake from "./Snake/Snake";
 
 const { size, numberOfRows, speed } = GAME_CONSTANTS.board;
 const tileSize = size / numberOfRows;
-
-enum Directions {
-  Right = "Right",
-  Top = "Top",
-  Left = "Left",
-  Bottom = "Bottom",
-}
 
 const initialState = {
   snake: [
@@ -26,26 +21,36 @@ const initialState = {
   isGameOver: false,
 };
 
+const keyDirectionMapping: Record<string, Directions> = {
+  ArrowRight: Directions.Right,
+  ArrowLeft: Directions.Left,
+  ArrowDown: Directions.Bottom,
+  ArrowUp: Directions.Top,
+};
+
 const Game = () => {
   const [isPaused, setIsPaused] = useState(true);
   const [state, setState] = useState<GameState>(initialState);
 
   useEffect(() => {
     const changeDirectionHandler = (event: KeyboardEvent) => {
-      setState((current) => {
-        return {
-          ...current,
-          direction: computeNextDirection(current, event),
-        };
-      });
+      setState((current) => ({
+        ...current,
+        direction: computeNextDirection(
+          current,
+          keyDirectionMapping[event.key]
+        ),
+      }));
     };
 
-    document.body.addEventListener("keydown", changeDirectionHandler);
+    if (!state.isGameOver) {
+      document.body.addEventListener("keydown", changeDirectionHandler);
+    }
 
     return () => {
       document.body.removeEventListener("keydown", changeDirectionHandler);
     };
-  }, []);
+  }, [state.isGameOver]);
 
   useEffect(() => {
     let intervalId: number;
@@ -63,11 +68,36 @@ const Game = () => {
     };
   }, [isPaused, state.isGameOver]);
 
+  useEffect(() => {
+    if (state.isGameOver) {
+      registerScore(state.snake.length);
+    }
+  }, [state.isGameOver]);
+
+  const handleSwipe = React.useCallback((direction: Directions) => {
+    setState((current) => ({
+      ...current,
+      direction: computeNextDirection(current, direction),
+    }));
+  }, []);
+
+  const swipeEventsHandler = useSwipeable({
+    onSwipedDown: () => handleSwipe(Directions.Bottom),
+    onSwipedLeft: () => handleSwipe(Directions.Left),
+    onSwipedRight: () => handleSwipe(Directions.Right),
+    onSwipedUp: () => handleSwipe(Directions.Top),
+  });
+
   return (
     <div>
-      <div className="relative mb-4">
+      <div className="text-right p-2">Highest score : {getHighestScore()}</div>
+      <div {...swipeEventsHandler} className="relative mb-4">
         <GridBackground />
-        <Snake tileSize={tileSize} parts={state.snake} />
+        <Snake
+          tileSize={tileSize}
+          parts={state.snake}
+          direction={state.direction}
+        />
         {state.apple && <Apple tileSize={tileSize} position={state.apple} />}
         {state.isGameOver && (
           <div className="absolute w-full h-full left-0 top-0 flex items-center justify-center font-bold text-5xl">
