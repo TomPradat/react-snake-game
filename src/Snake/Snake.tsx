@@ -1,32 +1,35 @@
 import React from "react";
-import { GAME_CONSTANTS } from "../constants";
 import { Directions } from "../core";
+import { useSettings } from "../GameSettingsContext";
 import Head from "./Head";
 
-const { speed } = GAME_CONSTANTS.board;
-
 type Props = {
-  tileSize: number;
   parts: Array<{ x: number; y: number }>;
   direction: Directions;
 };
 
-const Snake = ({ tileSize, parts, direction }: Props) => {
+const Snake = ({ parts, direction }: Props) => {
+  const {
+    board: { speed, tileSize },
+    snake: { color: snakeColor },
+  } = useSettings();
+
   return (
     <>
       {parts.map((part, index) => {
-        let reduction = 10;
+        let reduction = tileSize / 5;
         if (index === 0) {
-          reduction += 10;
+          reduction *= 3;
         } else if (index === 1) {
-          reduction += 5;
+          reduction *= 2;
+        } else if (index === 2) {
+          reduction *= 1.5;
         }
 
         if (index === parts.length - 1) {
           return (
             <Head
               key={parts.length - index}
-              tileSize={tileSize}
               part={part}
               direction={direction}
             />
@@ -36,12 +39,13 @@ const Snake = ({ tileSize, parts, direction }: Props) => {
         return (
           <div
             key={parts.length - index}
-            className="bg-blue-900 rounded-full absolute"
+            className="rounded-full absolute"
             style={{
               width: `${tileSize - reduction}px`,
               height: `${tileSize - reduction}px`,
               left: part.x * tileSize + reduction / 2,
               top: part.y * tileSize + reduction / 2,
+              backgroundColor: snakeColor,
               transition: `all ${speed}ms linear`,
             }}
           />

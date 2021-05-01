@@ -1,56 +1,69 @@
 import React from "react";
-import { GAME_CONSTANTS } from "../constants";
 import { Directions } from "../core";
-
-const { speed } = GAME_CONSTANTS.board;
+import { useSettings } from "../GameSettingsContext";
 
 type Props = {
   direction: Directions;
-  tileSize: number;
   part: { x: number; y: number };
 };
 
-const Head = ({ tileSize, direction, part }: Props) => {
-  let reduction = 10;
+const Head = ({ direction, part }: Props) => {
+  const {
+    board: { speed, tileSize },
+    snake: { color: snakeColor },
+  } = useSettings();
 
-  let leftEyeClasses;
-  let rightEyeClasses;
+  let reduction = tileSize / 5;
+
+  let leftEyeStyle;
+  let rightEyeStyle;
 
   switch (direction) {
     case Directions.Bottom:
-      leftEyeClasses = "bottom-2 right-2";
-      rightEyeClasses = "bottom-2 left-2";
+      leftEyeStyle = { bottom: reduction, right: reduction };
+      rightEyeStyle = { bottom: reduction, left: reduction };
       break;
     case Directions.Top:
-      leftEyeClasses = "top-2 left-2";
-      rightEyeClasses = "top-2 right-2";
+      leftEyeStyle = { top: reduction, left: reduction };
+      rightEyeStyle = { top: reduction, right: reduction };
       break;
     case Directions.Left:
-      leftEyeClasses = "bottom-2 left-2";
-      rightEyeClasses = "top-2 left-2";
+      leftEyeStyle = { bottom: reduction, left: reduction };
+      rightEyeStyle = { top: reduction, left: reduction };
       break;
     case Directions.Right:
-      leftEyeClasses = "top-2 right-2";
-      rightEyeClasses = "bottom-2 right-2";
+      leftEyeStyle = { top: reduction, right: reduction };
+      rightEyeStyle = { bottom: reduction, right: reduction };
       break;
   }
 
   return (
     <div
-      className="bg-blue-900 rounded-full absolute"
+      className="rounded-full absolute"
       style={{
         width: `${tileSize - reduction}px`,
         height: `${tileSize - reduction}px`,
         left: part.x * tileSize + reduction / 2,
         top: part.y * tileSize + reduction / 2,
+        backgroundColor: snakeColor,
         transition: `all ${speed}ms linear`,
       }}
     >
       <div
-        className={`bg-white rounded-full absolute ${leftEyeClasses} z-10 w-1 h-1`}
+        className={`bg-white rounded-full absolute z-10`}
+        style={{
+          ...leftEyeStyle,
+          width: tileSize / 10,
+          height: tileSize / 10,
+        }}
       ></div>
       <div
-        className={`bg-white rounded-full absolute ${rightEyeClasses} z-10 w-1 h-1`}
+        className={`bg-white rounded-full absolute z-10`}
+        style={{
+          ...rightEyeStyle,
+          width: tileSize / 10,
+          height: tileSize / 10,
+        }}
       ></div>
     </div>
   );

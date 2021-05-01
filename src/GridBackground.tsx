@@ -1,34 +1,39 @@
-import React, { useEffect, useRef } from "react";
-import { GAME_CONSTANTS } from "./constants";
-
-const {
-  size,
-  numberOfRows,
-  primaryColor,
-  secondaryColor,
-} = GAME_CONSTANTS.board;
+import React, { useCallback, useEffect, useRef } from "react";
+import { useSettings } from "./GameSettingsContext";
 
 const GridBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const drawBackground = (context: CanvasRenderingContext2D) => {
-    const numberOfTiles = Math.pow(numberOfRows, 2);
-    const tileSize = size / numberOfRows;
+  const {
+    board: {
+      tileSize,
+      numberOfRows,
+      numberOfColumns,
+      primaryColor,
+      secondaryColor,
+    },
+  } = useSettings();
 
-    for (let i = 0; i < numberOfTiles; i++) {
-      const columnNumber = i % numberOfRows;
-      const rowNumber = (i - columnNumber) / numberOfRows;
+  const drawBackground = useCallback(
+    (context: CanvasRenderingContext2D) => {
+      const numberOfTiles = numberOfColumns * numberOfRows;
 
-      context.fillStyle =
-        (rowNumber + columnNumber) % 2 === 0 ? primaryColor : secondaryColor;
-      context.fillRect(
-        columnNumber * tileSize,
-        rowNumber * tileSize,
-        tileSize,
-        tileSize
-      );
-    }
-  };
+      for (let i = 0; i < numberOfTiles; i++) {
+        const columnNumber = i % numberOfColumns;
+        const rowNumber = (i - columnNumber) / numberOfColumns;
+
+        context.fillStyle =
+          (rowNumber + columnNumber) % 2 === 0 ? primaryColor : secondaryColor;
+        context.fillRect(
+          columnNumber * tileSize,
+          rowNumber * tileSize,
+          tileSize,
+          tileSize
+        );
+      }
+    },
+    [numberOfRows, numberOfColumns, primaryColor, secondaryColor, tileSize]
+  );
 
   useEffect(() => {
     const context = canvasRef.current?.getContext("2d");
@@ -36,9 +41,15 @@ const GridBackground = () => {
     if (context) {
       drawBackground(context);
     }
-  }, []);
+  }, [drawBackground]);
 
-  return <canvas width={`${size}px`} height={`${size}px`} ref={canvasRef} />;
+  return (
+    <canvas
+      width={`${tileSize * numberOfColumns}px`}
+      height={`${tileSize * numberOfRows}px`}
+      ref={canvasRef}
+    />
+  );
 };
 
 export default GridBackground;

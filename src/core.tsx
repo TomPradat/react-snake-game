@@ -13,14 +13,15 @@ class GameOverError extends Error {}
 
 export type GameState = {
   snake: Snake;
-  apple: Position | null;
+  fruit: Position | null;
   direction: Directions;
   isGameOver: boolean;
 };
 
 const computeNextSnake = (
-  { snake, apple, direction }: GameState,
-  numberOfRows: number
+  { snake, fruit, direction }: GameState,
+  numberOfRows: number,
+  numberOfColumns: number
 ): Snake => {
   const nextSnake = [...snake];
 
@@ -59,7 +60,7 @@ const computeNextSnake = (
   }
 
   if (
-    nextSnakeHeadPosition.x >= numberOfRows ||
+    nextSnakeHeadPosition.x >= numberOfColumns ||
     nextSnakeHeadPosition.y >= numberOfRows ||
     nextSnakeHeadPosition.x < 0 ||
     nextSnakeHeadPosition.y < 0
@@ -78,9 +79,9 @@ const computeNextSnake = (
   }
 
   if (
-    !apple ||
-    apple.x !== nextSnakeHeadPosition.x ||
-    apple.y !== nextSnakeHeadPosition.y
+    !fruit ||
+    fruit.x !== nextSnakeHeadPosition.x ||
+    fruit.y !== nextSnakeHeadPosition.y
   ) {
   }
 
@@ -88,9 +89,9 @@ const computeNextSnake = (
   nextSnake.push(nextSnakeHeadPosition);
 
   if (
-    apple &&
-    apple.x === nextSnakeHeadPosition.x &&
-    apple.y === nextSnakeHeadPosition.y
+    fruit &&
+    fruit.x === nextSnakeHeadPosition.x &&
+    fruit.y === nextSnakeHeadPosition.y
   ) {
     nextSnake.unshift(tail as Position);
   }
@@ -102,10 +103,14 @@ const generateNumber = (min: number, max: number): number => {
   return Math.ceil(Math.random() * (max - min) + min);
 };
 
-const generateApple = (snake: Snake, numberOfRows: number): Position => {
-  const numberOfTiles = Math.pow(numberOfRows, 2);
+const generateApple = (
+  snake: Snake,
+  numberOfRows: number,
+  numberOfColumns: number
+): Position => {
+  const numberOfTiles = numberOfRows * numberOfColumns;
 
-  const numbersToExclude = snake.map(({ x, y }) => y * numberOfRows + x);
+  const numbersToExclude = snake.map(({ x, y }) => y * numberOfColumns + x);
 
   const candidates = new Array(numberOfTiles)
     .fill("")
@@ -117,8 +122,8 @@ const generateApple = (snake: Snake, numberOfRows: number): Position => {
   const chosenNumber = candidates[randomNumber];
 
   return {
-    x: chosenNumber % numberOfRows,
-    y: (chosenNumber - (chosenNumber % numberOfRows)) / numberOfRows,
+    x: chosenNumber % numberOfColumns,
+    y: (chosenNumber - (chosenNumber % numberOfColumns)) / numberOfColumns,
   };
 };
 
@@ -146,20 +151,24 @@ export const computeNextDirection = (
     : nextDirection;
 };
 
-const tick = (state: GameState, numberOfRows: number): GameState => {
+const tick = (
+  state: GameState,
+  numberOfRows: number,
+  numberOfColumns: number
+): GameState => {
   try {
-    const snake = computeNextSnake(state, numberOfRows);
-    let apple: Position | null;
+    const snake = computeNextSnake(state, numberOfRows, numberOfColumns);
+    let fruit: Position | null;
 
     if (snake.length > state.snake.length) {
-      apple = null;
-    } else if (state.apple === null) {
-      apple = generateApple(snake, numberOfRows);
+      fruit = null;
+    } else if (state.fruit === null) {
+      fruit = generateApple(snake, numberOfRows, numberOfColumns);
     } else {
-      apple = state.apple;
+      fruit = state.fruit;
     }
 
-    return { snake, apple, direction: state.direction, isGameOver: false };
+    return { snake, fruit, direction: state.direction, isGameOver: false };
   } catch (error) {
     return { ...state, isGameOver: true };
   }

@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSwipeable } from "react-swipeable";
-import Apple from "./Apple";
-import { GAME_CONSTANTS } from "./constants";
+import Fruit from "./Fruit";
 import tick, { computeNextDirection, Directions, GameState } from "./core";
+import { useSettings } from "./GameSettingsContext";
 import GridBackground from "./GridBackground";
 import { getHighestScore, registerScore } from "./score";
 import Snake from "./Snake/Snake";
-
-const { size, numberOfRows, speed } = GAME_CONSTANTS.board;
-const tileSize = size / numberOfRows;
 
 const initialState = {
   snake: [
@@ -16,7 +13,7 @@ const initialState = {
     { x: 1, y: 5 },
     { x: 2, y: 5 },
   ],
-  apple: { x: 5, y: 6 },
+  fruit: null,
   direction: Directions.Right,
   isGameOver: false,
 };
@@ -31,6 +28,10 @@ const keyDirectionMapping: Record<string, Directions> = {
 const Game = () => {
   const [isPaused, setIsPaused] = useState(true);
   const [state, setState] = useState<GameState>(initialState);
+
+  const {
+    board: { numberOfRows, numberOfColumns, speed },
+  } = useSettings();
 
   useEffect(() => {
     const changeDirectionHandler = (event: KeyboardEvent) => {
@@ -57,7 +58,7 @@ const Game = () => {
 
     if (!isPaused && !state.isGameOver) {
       intervalId = setInterval(() => {
-        setState((current) => tick(current, numberOfRows));
+        setState((current) => tick(current, numberOfRows, numberOfColumns));
       }, speed);
     }
 
@@ -74,18 +75,24 @@ const Game = () => {
     }
   }, [state.isGameOver]);
 
-  const handleSwipe = React.useCallback((direction: Directions) => {
-    setState((current) => ({
-      ...current,
-      direction: computeNextDirection(current, direction),
-    }));
-  }, []);
+  const handleSwipe = React.useCallback(
+    (direction: Directions) => {
+      if (!state.isGameOver) {
+        setState((current) => ({
+          ...current,
+          direction: computeNextDirection(current, direction),
+        }));
+      }
+    },
+    [state.isGameOver]
+  );
 
   const swipeEventsHandler = useSwipeable({
     onSwipedDown: () => handleSwipe(Directions.Bottom),
     onSwipedLeft: () => handleSwipe(Directions.Left),
     onSwipedRight: () => handleSwipe(Directions.Right),
     onSwipedUp: () => handleSwipe(Directions.Top),
+    preventDefaultTouchmoveEvent: true,
   });
 
   return (
@@ -93,12 +100,8 @@ const Game = () => {
       <div className="text-right p-2">Highest score : {getHighestScore()}</div>
       <div {...swipeEventsHandler} className="relative mb-4">
         <GridBackground />
-        <Snake
-          tileSize={tileSize}
-          parts={state.snake}
-          direction={state.direction}
-        />
-        {state.apple && <Apple tileSize={tileSize} position={state.apple} />}
+        <Snake parts={state.snake} direction={state.direction} />
+        {state.fruit && <Fruit position={state.fruit} />}
         {state.isGameOver && (
           <div className="absolute w-full h-full left-0 top-0 flex items-center justify-center font-bold text-5xl">
             GAME OVER
