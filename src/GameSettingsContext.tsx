@@ -46,7 +46,7 @@ const SettingsProvider = ({ children }: { children: React.ReactElement }) => {
       ...old,
       board: {
         ...old.board,
-        tileSize: isMobile ? 30 : 50,
+        tileSize: isMobile ? 30 : 35,
         numberOfRows: isMobile ? 18 : 18,
         numberOfColumns: isMobile ? 10 : 18,
         speed: isMobile ? 400 / 3 : 300 / 3,
