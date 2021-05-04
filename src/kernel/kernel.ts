@@ -1,22 +1,6 @@
-type Position = { x: number; y: number };
-
-type Snake = Array<Position>;
-
-export enum Directions {
-  Right = "Right",
-  Top = "Top",
-  Left = "Left",
-  Bottom = "Bottom",
-}
+import { GameState, Position, Snake, Directions } from "./types";
 
 class GameOverError extends Error {}
-
-export type GameState = {
-  snake: Snake;
-  fruit: Position | null;
-  direction: Directions;
-  isGameOver: boolean;
-};
 
 const computeNextSnake = (
   { snake, fruit, direction }: GameState,
@@ -151,7 +135,7 @@ export const computeNextDirection = (
     : nextDirection;
 };
 
-const tick = (
+export const tick = (
   state: GameState,
   numberOfRows: number,
   numberOfColumns: number
@@ -173,5 +157,3 @@ const tick = (
     return { ...state, isGameOver: true };
   }
 };
-
-export default tick;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import Fruit from "./Fruit";
-import tick, { computeNextDirection, Directions, GameState } from "./core";
+import { tick, computeNextDirection, Directions, GameState } from "./kernel";
 import { useSettings } from "./GameSettingsContext";
 import GridBackground from "./GridBackground";
 import { getHighestScore, registerScore } from "./score";

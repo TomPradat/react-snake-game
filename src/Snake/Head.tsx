@@ -1,5 +1,5 @@
 import React from "react";
-import { Directions } from "../core";
+import { Directions } from "../kernel";
 import { useSettings } from "../GameSettingsContext";
 
 type Props = {
@@ -13,27 +13,27 @@ const Head = ({ direction, part }: Props) => {
     snake: { color: snakeColor },
   } = useSettings();
 
-  let reduction = tileSize / 5;
+  let padding = tileSize / 5;
 
   let leftEyeStyle;
   let rightEyeStyle;
 
   switch (direction) {
     case Directions.Bottom:
-      leftEyeStyle = { bottom: reduction, right: reduction };
-      rightEyeStyle = { bottom: reduction, left: reduction };
+      leftEyeStyle = { bottom: padding, right: padding };
+      rightEyeStyle = { bottom: padding, left: padding };
       break;
     case Directions.Top:
-      leftEyeStyle = { top: reduction, left: reduction };
-      rightEyeStyle = { top: reduction, right: reduction };
+      leftEyeStyle = { top: padding, left: padding };
+      rightEyeStyle = { top: padding, right: padding };
       break;
     case Directions.Left:
-      leftEyeStyle = { bottom: reduction, left: reduction };
-      rightEyeStyle = { top: reduction, left: reduction };
+      leftEyeStyle = { bottom: padding, left: padding };
+      rightEyeStyle = { top: padding, left: padding };
       break;
     case Directions.Right:
-      leftEyeStyle = { top: reduction, right: reduction };
-      rightEyeStyle = { bottom: reduction, right: reduction };
+      leftEyeStyle = { top: padding, right: padding };
+      rightEyeStyle = { bottom: padding, right: padding };
       break;
   }
 
@@ -41,10 +41,10 @@ const Head = ({ direction, part }: Props) => {
     <div
       className="rounded-full absolute"
       style={{
-        width: `${tileSize - reduction}px`,
-        height: `${tileSize - reduction}px`,
-        left: part.x * tileSize + reduction / 2,
-        top: part.y * tileSize + reduction / 2,
+        width: `${tileSize - padding}px`,
+        height: `${tileSize - padding}px`,
+        left: part.x * tileSize + padding / 2,
+        top: part.y * tileSize + padding / 2,
         backgroundColor: snakeColor,
         transition: `all ${speed}ms linear`,
       }}

@@ -2,9 +2,26 @@ import React, { useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import colors from "tailwindcss/colors";
 
-const initialSettings = {
+const mobileSettings = {
   board: {
-    tileSize: 20,
+    tileSize: 30,
+    numberOfRows: 18,
+    numberOfColumns: 10,
+    primaryColor: colors.blue[500],
+    secondaryColor: colors.blue[400],
+    speed: 400 / 3,
+  },
+  snake: {
+    color: colors.green[900],
+  },
+  fruit: {
+    color: colors.yellow[400],
+  },
+};
+
+const desktopSettings = {
+  board: {
+    tileSize: 35,
     numberOfRows: 18,
     numberOfColumns: 18,
     primaryColor: colors.blue[500],
@@ -34,24 +51,15 @@ const GameSettingsContext = React.createContext<{
   fruit: {
     color: string;
   };
-}>(initialSettings);
+}>(mobileSettings);
 
 const SettingsProvider = ({ children }: { children: React.ReactElement }) => {
-  const [settings, setSettings] = React.useState(initialSettings);
+  const [settings, setSettings] = React.useState(mobileSettings);
 
   const isMobile = useMediaQuery({ query: "(max-width: 750px)" });
 
   useEffect(() => {
-    setSettings((old) => ({
-      ...old,
-      board: {
-        ...old.board,
-        tileSize: isMobile ? 30 : 35,
-        numberOfRows: isMobile ? 18 : 18,
-        numberOfColumns: isMobile ? 10 : 18,
-        speed: isMobile ? 400 / 3 : 300 / 3,
-      },
-    }));
+    setSettings(isMobile ? mobileSettings : desktopSettings);
   }, [isMobile]);
 
   return (

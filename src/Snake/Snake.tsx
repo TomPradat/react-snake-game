@@ -1,5 +1,5 @@
 import React from "react";
-import { Directions } from "../core";
+import { Directions } from "../kernel";
 import { useSettings } from "../GameSettingsContext";
 import Head from "./Head";
 

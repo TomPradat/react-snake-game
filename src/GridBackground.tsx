@@ -14,7 +14,7 @@ const GridBackground = () => {
     },
   } = useSettings();
 
-  const drawBackground = useCallback(
+  const drawGrid = useCallback(
     (context: CanvasRenderingContext2D) => {
       const numberOfTiles = numberOfColumns * numberOfRows;
 
@@ -39,9 +39,9 @@ const GridBackground = () => {
     const context = canvasRef.current?.getContext("2d");
 
     if (context) {
-      drawBackground(context);
+      drawGrid(context);
     }
-  }, [drawBackground]);
+  }, [drawGrid]);
 
   return (
     <canvas
