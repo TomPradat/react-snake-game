@@ -112,7 +112,10 @@ const generateApple = (
 };
 
 export const computeNextDirection = (
-  { snake, direction: currentDirection }: GameState,
+  {
+    snake,
+    direction: currentDirection,
+  }: { snake: Snake; direction: Directions },
   eventDirection: Directions
 ): Directions => {
   const head = snake[snake.length - 1];
