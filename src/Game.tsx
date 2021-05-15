@@ -67,13 +67,13 @@ const Game = () => {
         clearInterval(intervalId);
       }
     };
-  }, [isPaused, state.isGameOver]);
+  }, [isPaused, state.isGameOver, numberOfColumns, numberOfRows, speed]);
 
   useEffect(() => {
     if (state.isGameOver) {
       registerScore(state.snake.length);
     }
-  }, [state.isGameOver]);
+  }, [state.isGameOver, state.snake.length]);
 
   const handleSwipe = React.useCallback(
     (direction: Directions) => {
