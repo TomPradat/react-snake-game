@@ -9,7 +9,7 @@ const mobileSettings = {
     numberOfColumns: 10,
     primaryColor: colors.blue[500],
     secondaryColor: colors.blue[400],
-    speed: 400 / 3,
+    speed: 600 / 3,
   },
   snake: {
     color: colors.green[900],
@@ -26,7 +26,7 @@ const desktopSettings = {
     numberOfColumns: 18,
     primaryColor: colors.blue[500],
     secondaryColor: colors.blue[400],
-    speed: 300 / 3,
+    speed: 400 / 3,
   },
   snake: {
     color: colors.green[900],
